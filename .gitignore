@@ -1,3 +1,9 @@
+# Project Files
+data/baseball-reference/*.txt
+data/chadwickbureau/*.csv
+sql/baseball-reference/*.sql
+sql/chadwichbureau/*.sql
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
