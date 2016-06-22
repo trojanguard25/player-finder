@@ -9,9 +9,9 @@ class DataSource:
         self.war = ""
         self._cache = {}
         self._createConnection()
-    
+
     def _createConnection(self):
-        self.conn = pymysql.connect(host='localhost', port=3306, user='dan', passwd='0ldn0teb00k', db='mlbplayercache')
+        self.conn = pymysql.connect(host='localhost', port=3306, user='dan', passwd='dan123', db='mlbplayercache')
 
     def _getWar(self, uuid, war_type):
         if uuid in self._cache:
@@ -36,7 +36,7 @@ class DataSource:
         data['Total'] = 0.0
         cur.execute(sql)
         for row in cur:
-            print row
+            #print row
             data[str(row[1])] = float(row[2])
             data['Total'] += float(row[2])
 
@@ -57,7 +57,7 @@ class DataSource:
         else:
             self._cache[uuid] = {}
 
-        
+
         combined_war = self.getPitchWar(uuid, years)
         bat_war = self.getBatWar(uuid, years)
 
@@ -90,5 +90,3 @@ class DataSource:
             else:
                 sql += self.year + ' = ' + year
             sql += ') '
-
-
