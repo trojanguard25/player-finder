@@ -2,6 +2,7 @@ import csv
 #import Levenshtein
 import os
 import re
+import config
 
 class BuildPlayerCache:
     def __init__(self,update=False):
@@ -39,7 +40,7 @@ class BuildPlayerCache:
                     lengths[key] = len(row[key])
 
         print lengths
-            
+
 
     def parseRegister(self):
         sql_f = open(self.register_sql, 'w')
@@ -49,7 +50,7 @@ class BuildPlayerCache:
 
         header = txt_f.readline()
 
-        sql_f.write("USE 'mlbplayercache';\n")
+        sql_f.write("USE '" + config.Config.dbName + "';\n")
         sql_f.write("DROP TABLE IF EXISTS chadwickbureau;\n")
         sql_f.write("CREATE TABLE chadwickbureau (\n")
 
@@ -103,7 +104,7 @@ class BuildPlayerCache:
             #    first = False
             #else:
             #    sql_f.write(",\n")
-            
+
             sql_f.write(insert)
             sql_f.write("(")
             #sql_f.write(line);
@@ -134,7 +135,7 @@ class BuildPlayerCache:
 
         header = txt_f.readline()
 
-        sql_f.write("USE 'mlbplayercache';\n")
+        sql_f.write("USE '" + config.Config.dbName + "';\n")
         sql_f.write("DROP TABLE IF EXISTS br_war_bat;\n")
         sql_f.write("CREATE TABLE br_war_bat (\n")
         sql_f.write("id INT UNSIGNED NOT NULL AUTO_INCREMENT,\n")
@@ -178,7 +179,7 @@ class BuildPlayerCache:
             #    first = False
             #else:
             #    sql_f.write(",\n")
-            
+
             sql_f.write(insert)
             sql_f.write("(")
             #sql_f.write(line);
@@ -209,7 +210,7 @@ class BuildPlayerCache:
 
         header = txt_f.readline()
 
-        sql_f.write("USE 'mlbplayercache';\n")
+        sql_f.write("USE '" + config.Config.dbName + "';\n")
         sql_f.write("DROP TABLE IF EXISTS br_war_pitch;\n")
         sql_f.write("CREATE TABLE br_war_pitch (\n")
         sql_f.write("id INT UNSIGNED NOT NULL AUTO_INCREMENT,\n")
@@ -253,7 +254,7 @@ class BuildPlayerCache:
             #    first = False
             #else:
             #    sql_f.write(",\n")
-            
+
             sql_f.write(insert)
             sql_f.write("(")
             #sql_f.write(line);
@@ -277,4 +278,3 @@ class BuildPlayerCache:
             sql_f.write(";\n")
 
         sql_f.close()
-

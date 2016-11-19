@@ -1,4 +1,5 @@
 import pymysql
+import config
 
 
 class DataSource:
@@ -11,7 +12,7 @@ class DataSource:
         self._createConnection()
 
     def _createConnection(self):
-        self.conn = pymysql.connect(host='localhost', port=3306, user='dan', passwd='dan123', db='mlbplayercache')
+        self.conn = pymysql.connect(host=config.Config.dbHost, port=config.Config.dbPort, user=config.Config.dbUser, passwd=config.Config.dbPass, db=config.Config.dbName)
 
     def _getWar(self, uuid, war_type):
         if uuid in self._cache:
