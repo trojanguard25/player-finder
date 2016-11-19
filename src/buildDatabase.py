@@ -5,13 +5,13 @@ import re
 
 class BuildPlayerCache:
     def __init__(self,update=False):
-        self.register_csv = '..\\data\\chadwickbureau\\people.csv'
-        self.brbat_csv = '..\\data\\baseball-reference\\war_daily_bat.txt'
-        self.brpitch_csv = '..\\data\\baseball-reference\\war_daily_pitch.txt'
+        self.register_csv = '..' + os.sep + 'data' + os.sep + 'chadwick-bureau' + os.sep + 'people.csv'
+        self.brbat_csv = '..' + os.sep + 'data' + os.sep + 'baseball-reference' + os.sep + 'war_daily_bat.txt'
+        self.brpitch_csv = '..' + os.sep + 'data' + os.sep + 'baseball-reference' + os.sep + 'war_daily_pitch.txt'
 
-        self.register_sql = '..\\sql\\chadwickbureau\\people.sql'
-        self.brbat_sql = '..\\sql\\baseball-reference\\war_daily_bat.sql'
-        self.brpitch_sql = '..\\sql\\baseball-reference\\war_daily_pitch.sql'
+        self.register_sql = '..' + os.sep + 'sql' + os.sep + 'chadwick-bureau' + os.sep + 'people.sql'
+        self.brbat_sql = '..' + os.sep + 'sql' + os.sep + 'baseball-reference' + os.sep + 'war_daily_bat.sql'
+        self.brpitch_sql = '..' + os.sep + 'sql' + os.sep + 'baseball-reference' + os.sep + 'war_daily_pitch.sql'
 
         if update:
             self.checkForUpdates()
@@ -137,7 +137,7 @@ class BuildPlayerCache:
         sql_f.write("USE 'mlbplayercache';\n")
         sql_f.write("DROP TABLE IF EXISTS br_war_bat;\n")
         sql_f.write("CREATE TABLE br_war_bat (\n")
-        sql_f.write("id INT UNSIGNED DEFAULT NULL AUTO_INCREMENT,\n")
+        sql_f.write("id INT UNSIGNED NOT NULL AUTO_INCREMENT,\n")
 
         idx = 0
         quotes = []
@@ -212,7 +212,7 @@ class BuildPlayerCache:
         sql_f.write("USE 'mlbplayercache';\n")
         sql_f.write("DROP TABLE IF EXISTS br_war_pitch;\n")
         sql_f.write("CREATE TABLE br_war_pitch (\n")
-        sql_f.write("id INT UNSIGNED DEFAULT NULL AUTO_INCREMENT,\n")
+        sql_f.write("id INT UNSIGNED NOT NULL AUTO_INCREMENT,\n")
 
         idx = 0
         quotes = []
