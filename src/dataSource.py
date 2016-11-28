@@ -1,6 +1,68 @@
 import pymysql
 import config
 
+class YearWar:
+    def __init__(self, uuid=""):
+        self.uuid = uuid
+        self.bat_war = 0
+        self.pitch_war = 0
+        self.year = 0
+
+    def combine(self, war):
+        if self.uuid != war.uuid or self.year != war.year:
+            raise
+        self.pitch_war = max(self.pitch_war, war.pitch_war)
+        self.bat_war = max(self.bat_war, war.bat_war)
+
+    def Print(self):
+        print "uuid: " + self.uuid
+        print "year: " + str(self.year)
+        print "bat_war: " + str(self.bat_war)
+        print "pitch_war: " + str(self.pitch_war)
+
+class TotalWar:
+    def __init__(self, uuid=''):
+        self.uuid = uuid
+        self.bat_war = 0
+        self.pitch_war = 0
+        self.total_war = 0
+        self.years = []
+        self._year_wars = {}
+
+    def addYearWar(self, war, combine=False):
+        if self.uuid != war.uuid:
+            raise
+
+        if not war.year in self._year_wars:
+            self.years.append(war.year)
+            self._year_wars[war.year] = war
+            self.years.sort()
+        else:
+            if combine:
+                self._year_wars[war.year].combine(war)
+            else:
+                raise "Duplicate year added"
+
+        self.calcTotals()
+
+    def Print(self):
+        print "uuid: " + self.uuid
+        print "total_war: " + str(self.total_war)
+        print "bat_war: " + str(self.bat_war)
+        print "pitch_war: " + str(self.pitch_war)
+        for year in self.years:
+            self._year_wars[year].Print()
+
+
+    def calcTotals(self):
+        self.bat_war = 0
+        self.pitch_war = 0
+        for key in self._year_wars:
+            self.bat_war += self._year_wars[key].bat_war
+            self.pitch_war += self._year_wars[key].pitch_war
+
+        self.total_war = self.bat_war + self.pitch_war
+
 
 class DataSource:
     def __init__(self):
@@ -33,13 +95,18 @@ class DataSource:
         sql += ' LEFT JOIN chadwickbureau c on ' + self._uuidToId()
         sql += ' WHERE c.key_person = \'' + uuid + '\''
 
-        data = {}
-        data['Total'] = 0.0
+        data = TotalWar(uuid)
         cur.execute(sql)
         for row in cur:
             #print row
-            data[str(row[1])] = float(row[2])
-            data['Total'] += float(row[2])
+            yw = YearWar()
+            yw.uuid = row[0]
+            yw.year = row[1]
+            if war_type == 'Bat':
+                yw.bat_war = float(row[2])
+            else:
+                yw.pitch_war = float(row[2])
+            data.addYearWar(yw)
 
         self._cache[uuid][war_type] = data
 
@@ -62,11 +129,8 @@ class DataSource:
         combined_war = self.getPitchWar(uuid, years)
         bat_war = self.getBatWar(uuid, years)
 
-        for key in bat_war:
-            if key in combined_war:
-                combined_war[key] += bat_war[key]
-            else:
-                combined_war[key] = bat_war[key]
+        for key in bat_war.years:
+            combined_war.addYearWar(bat_war._year_wars[key], True)
 
         self._cache[uuid]['Combined'] = combined_war
         return self._cache[uuid]['Combined']
