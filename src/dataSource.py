@@ -11,8 +11,8 @@ class YearWar:
     def combine(self, war):
         if self.uuid != war.uuid or self.year != war.year:
             raise
-        self.pitch_war = max(self.pitch_war, war.pitch_war)
-        self.bat_war = max(self.bat_war, war.bat_war)
+        self.pitch_war = self.pitch_war + war.pitch_war
+        self.bat_war = self.bat_war + war.bat_war
 
     def Print(self):
         print "uuid: " + self.uuid
@@ -103,10 +103,17 @@ class DataSource:
             yw.uuid = row[0]
             yw.year = row[1]
             if war_type == 'Bat':
-                yw.bat_war = float(row[2])
+                try: 
+                    yw.bat_war = float(row[2])
+                except TypeError:
+                    yw.bat_war = 0
             else:
-                yw.pitch_war = float(row[2])
-            data.addYearWar(yw)
+                try: 
+                    yw.pitch_war = float(row[2])
+                except TypeError:
+                    yw.pitch_war = 0
+
+            data.addYearWar(yw, True)
 
         self._cache[uuid][war_type] = data
 
@@ -134,6 +141,31 @@ class DataSource:
 
         self._cache[uuid]['Combined'] = combined_war
         return self._cache[uuid]['Combined']
+
+    def getTeamControlWar(self, uuid):
+        combined_war = self.getCombinedWar(uuid)
+        team_control_war = TotalWar(uuid)
+        if combined_war.years:
+            start_year = min(combined_war.years)
+            if not start_year == 0:
+                for yr in range(start_year, start_year+7):
+                    if yr in combined_war._year_wars:
+                        team_control_war.addYearWar(combined_war._year_wars[yr], True)
+
+        return team_control_war
+
+    def getName(self, uuid):
+        cur = self.conn.cursor()
+        sql = 'SELECT c.name_first, c.name_last '
+        sql += ' FROM chadwickbureau c '
+        sql += ' WHERE c.key_person = \'' + uuid + '\''
+
+        cur.execute(sql)
+        for row in cur:
+            return '{0} {1}'.format(row[0], row[1])
+
+        return ''
+ 
 
     def _uuidToId(self):
         raise ValueError('no implementation')
