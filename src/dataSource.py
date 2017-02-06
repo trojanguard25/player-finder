@@ -71,6 +71,9 @@ class DataSource:
         self.year = ""
         self.war = ""
         self._cache = {}
+        self._pitcher = {}
+        self._hitter = {}
+        self._name = {}
         self._createConnection()
 
     def _createConnection(self):
@@ -154,18 +157,56 @@ class DataSource:
 
         return team_control_war
 
+    def isHitter(self, uuid):
+        if uuid in self._hitter:
+            return self._hitter[uuid]
+
+        cur = self.conn.cursor()
+        sql = 'SELECT hitter '
+        sql += ' FROM is_pitcher '
+        sql += ' WHERE key_person = \'' + uuid + '\''
+
+        cur.execute(sql)
+        self._hitter[uuid] = False
+        for row in cur:
+            if row[0] == 'Y':
+                self._hitter[uuid] = True
+
+        return self._hitter[uuid]
+
+
+    def isPitcher(self, uuid):
+        if uuid in self._pitcher:
+            return self._pitcher[uuid]
+
+        cur = self.conn.cursor()
+        sql = 'SELECT pitcher '
+        sql += ' FROM is_pitcher '
+        sql += ' WHERE key_person = \'' + uuid + '\''
+
+        cur.execute(sql)
+        self._pitcher[uuid] = False
+        for row in cur:
+            if row[0] == 'Y':
+                self._pitcher[uuid] = True
+
+        return self._pitcher[uuid]
+
     def getName(self, uuid):
+        if uuid in self._name:
+            return self._name[uuid]
+
         cur = self.conn.cursor()
         sql = 'SELECT c.name_first, c.name_last '
         sql += ' FROM chadwickbureau c '
         sql += ' WHERE c.key_person = \'' + uuid + '\''
 
         cur.execute(sql)
+        self._name[uuid] = ''
         for row in cur:
-            return '{0} {1}'.format(row[0], row[1])
+            self._name[uuid] = '{0} {1}'.format(row[0], row[1])
 
-        return ''
- 
+        return self._name[uuid]
 
     def _uuidToId(self):
         raise ValueError('no implementation')
